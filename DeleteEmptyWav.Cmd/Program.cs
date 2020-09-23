@@ -40,13 +40,13 @@ namespace DeleteEmptyWav.Cmd
             {
                 var d = new EmptyWavDetector(c.FullName);
 
-                if (d.IsEmpty)
+                if (d.PercentEmpty == 0)
                 {
                     Console.WriteLine($"File {c.FullName} is empty!");
                 }
                 else
                 {
-                    if (!options.Silent) Console.WriteLine($"File {c.FullName} is not empty.");
+                    if (!options.Silent) Console.WriteLine($"File {c.FullName} is {d.PercentEmpty}% empty.");
                 }
             });
         }
