@@ -9,7 +9,9 @@ namespace DeleteEmptyWav.Cmd
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Here we go...");
+            Console.WriteLine();
+            Console.WriteLine("--- Empty WAV Finder ---");
+            Console.WriteLine();
 
             try
             {
@@ -29,26 +31,42 @@ namespace DeleteEmptyWav.Cmd
 
         static void ShowWelcome()
         {
-            Console.WriteLine("... Scanning for empty WAV files ...");
+            Console.WriteLine("Scanning for empty WAV files ...");
         }
 
         static void DoSomething(Options options)
         {
             DirectoryInfo dir = new DirectoryInfo(options.Path);
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+
+            watch.Start();
 
             dir.EnumerateFiles("*.wav").ToList().ForEach(c => 
             {
-                var d = new EmptyWavDetector(c.FullName);
+                var t = options.Threshold;
+                var d = new EmptyWavDetector(c.FullName, t);
 
-                if (d.PercentEmpty == 0)
+                if (!options.Silent && options.Measure && d.PercentEmpty == 0)
                 {
-                    Console.WriteLine($"File {c.FullName} is empty!");
+                    Console.WriteLine($"File {d.FileName} is empty!");
                 }
-                else
+                else if (!options.Silent && options.Measure)
                 {
-                    if (!options.Silent) Console.WriteLine($"File {c.FullName} is {d.PercentEmpty}% empty.");
+                    Console.WriteLine($"File {d.FileName} is {d.PercentEmpty}% empty.");
+                }
+                else if (d.IsEmpty)
+                {
+                    Console.WriteLine($"File {d.FileName} is empty!");
+                }
+                else if (!options.Silent)
+                {
+                    Console.WriteLine($"File {d.FileName} is NOT empty!");
                 }
             });
+
+            watch.Stop();
+
+            Console.WriteLine($"{Environment.NewLine}Scan complete in {watch.ElapsedMilliseconds}msec{Environment.NewLine}");
         }
     }
 }
