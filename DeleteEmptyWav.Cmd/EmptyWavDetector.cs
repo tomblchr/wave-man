@@ -46,7 +46,7 @@ namespace DeleteEmptyWav.Cmd
                     }
 
                     _percentEmpty = 100 - Convert.ToInt32(100 * over / wav.SampleCount);
-                    _isEmpty = _percentEmpty == 0;
+                    _isEmpty = _percentEmpty == 100;
                     return _percentEmpty.Value;
                 }
             }

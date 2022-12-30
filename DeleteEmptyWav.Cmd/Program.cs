@@ -39,6 +39,13 @@ namespace DeleteEmptyWav.Cmd
             DirectoryInfo dir = new DirectoryInfo(options.Path);
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 
+            if (options.Delete)
+            {
+                Console.WriteLine();
+                Console.WriteLine("!!! EMPTY FILES WILL BE DELETED !!!");
+                Console.WriteLine();
+            }
+
             watch.Start();
 
             dir.EnumerateFiles("*.wav").ToList().ForEach(c => 
@@ -60,7 +67,17 @@ namespace DeleteEmptyWav.Cmd
                 }
                 else if (!options.Silent)
                 {
-                    Console.WriteLine($"File {d.FileName} is NOT empty!");
+                    Console.WriteLine($"File {d.FileName} is not empty.");
+                }
+
+                if (options.Delete && d.IsEmpty)
+                {
+                    d.FileName.DeleteToRecycleBin();
+                    if (File.Exists(d.FileName))
+                    {
+                        throw new InvalidOperationException($"{d.FileName} should have been deleted but still exists.");
+                    }
+                    Console.WriteLine($"{d.FileName} has been sent to the recycle bin.");
                 }
             });
 
